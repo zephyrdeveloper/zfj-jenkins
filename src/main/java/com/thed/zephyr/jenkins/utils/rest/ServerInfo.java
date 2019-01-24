@@ -1,11 +1,9 @@
 package com.thed.zephyr.jenkins.utils.rest;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thed.zephyr.cloud.rest.ZFJCloudRestClient;
+import com.thed.zephyr.cloud.rest.client.JwtGenerator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -15,8 +13,11 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.thed.zephyr.cloud.rest.ZFJCloudRestClient;
-import com.thed.zephyr.cloud.rest.client.JwtGenerator;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerInfo {
 	
@@ -25,7 +26,8 @@ public class ServerInfo {
 	private static String URL_ZCLOUD_GET_GENERAL_INFO = "{SERVER}/public/rest/api/1.0/config/generalinformation";
 	private static String TEST_ISSSUETYPE_NAME = "Test";
 	private static long ISSUE_TYPE_ID = 10100L;
-	
+	private static String URL_MYSELF = "{SERVER}/rest/api/2/myself";
+
 	private static String URL_GET_USERS = "{SERVER}/rest/api/2/user?username=";
 
 
@@ -222,7 +224,11 @@ public class ServerInfo {
 	}
 	
 	static String generateJWT(RestClient restClient, String constructedURL, String requestMethod) {
-		ZFJCloudRestClient client = ZFJCloudRestClient.restBuilder(restClient.getZephyrCloudURL(), restClient.getAccessKey(), restClient.getSecretKey(), restClient.getUserName())
+		String accountId = getAccountIdFromKey(
+				restClient.getUrl(),
+				restClient.getUserName(),
+				restClient.getPassword());
+		ZFJCloudRestClient client = ZFJCloudRestClient.restBuilder(restClient.getZephyrCloudURL(), restClient.getAccessKey(), restClient.getSecretKey(), accountId)
 				.build();
 		JwtGenerator jwtGenerator = client.getJwtGenerator();
 
@@ -236,5 +242,35 @@ public class ServerInfo {
 		String jwt = jwtGenerator.generateJWT(requestMethod, uri, expirationInSec);
 		return jwt;
 	}
-	
+
+	/**
+	 * Get AccountId from loggedIn User
+	 * @param jiraCloudUrl
+	 * @param userInfo
+	 * @param userCred
+	 * @return
+	 */
+	private static String getAccountIdFromKey(String jiraCloudUrl, String userInfo,  String userCred) {
+		String accountId = userInfo;
+
+		RestClient restClient = new RestClient(jiraCloudUrl, userInfo, userCred);
+		HttpResponse response = null;
+		try {
+			String constructedURL = URL_MYSELF.replace("{SERVER}", restClient.getUrl());
+			response = restClient.getHttpclient().execute(new HttpGet(constructedURL));
+
+			if(response != null && response.getStatusLine() != null && response.getStatusLine().getStatusCode()==200){
+				String respStr = EntityUtils.toString(response.getEntity());
+				JsonNode jsonNode = new ObjectMapper().readValue(respStr, JsonNode.class);
+				if(jsonNode != null && jsonNode.has("accountId")){
+					accountId = jsonNode.get("accountId").asText();
+				}
+			}
+		}  catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return accountId;
+	}
+
 }

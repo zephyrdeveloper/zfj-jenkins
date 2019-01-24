@@ -147,7 +147,7 @@ public class JwtGeneratorImpl implements JwtGenerator {
         try {
             final URI uriWithoutProductContext = getUri(uri, zConfig.ZEPHYR_BASE_URL);
 
-            jwt = jwtAuthorisationGenerator.generate(HttpMethod.valueOf(requestMethod), uriWithoutProductContext, new HashMap<String, List<String>>(), zConfig.host, zConfig.USER_NAME);
+            jwt = jwtAuthorisationGenerator.generate(HttpMethod.valueOf(requestMethod), uriWithoutProductContext, new HashMap<String, List<String>>(), zConfig.host, zConfig.ACCOUNT_ID);
         } catch (Exception e) {
         }
         final String authorizationHeaderValue = jwt.getOrNull();

@@ -19,8 +19,8 @@ public class ZFJCloudRestClient {
     private ZFJCloudRestClient() {
     }
 
-    public static Builder  restBuilder(String zephyrBaseUrl, String accessKey, String secretKey, String userName){
-        return new ZFJCloudRestClient().new Builder(zephyrBaseUrl, accessKey, secretKey, userName);
+    public static Builder  restBuilder(String zephyrBaseUrl, String accessKey, String secretKey, String accountId){
+        return new ZFJCloudRestClient().new Builder(zephyrBaseUrl, accessKey, secretKey, accountId);
     }
 
     public JwtGenerator getJwtGenerator(){
@@ -31,18 +31,18 @@ public class ZFJCloudRestClient {
 
         private String accessKey;
         private String secretKey;
-        private String userName;
+        private String accountId;
         private String zephyrBaseUrl;
 
-        private Builder(String zephyrBaseUrl, String accessKey, String secretKey, String userName) {
+        private Builder(String zephyrBaseUrl, String accessKey, String secretKey, String accountId) {
             this.zephyrBaseUrl = zephyrBaseUrl;
             this.accessKey = accessKey;
             this.secretKey = secretKey;
-            this.userName = userName;
+            this.accountId = accountId;
         }
 
         public ZFJCloudRestClient build() {
-            ZConfig zConfig = new ZConfig(accessKey, secretKey, userName, zephyrBaseUrl);
+            ZConfig zConfig = new ZConfig(accessKey, secretKey, accountId, zephyrBaseUrl);
             jwtGenerator = new JwtGeneratorImpl(zConfig);
 
             return ZFJCloudRestClient.this;
