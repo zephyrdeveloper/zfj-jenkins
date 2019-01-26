@@ -257,7 +257,7 @@ public class ServerInfo {
 		HttpResponse response = null;
 		try {
 			String constructedURL = URL_MYSELF.replace("{SERVER}", restClient.getUrl());
-			response = restClient.getHttpclient().execute(new HttpGet(constructedURL));
+			response = restClient.getHttpclient().execute(new HttpGet(constructedURL), restClient.getContext());
 
 			if(response != null && response.getStatusLine() != null && response.getStatusLine().getStatusCode()==200){
 				String respStr = EntityUtils.toString(response.getEntity());
