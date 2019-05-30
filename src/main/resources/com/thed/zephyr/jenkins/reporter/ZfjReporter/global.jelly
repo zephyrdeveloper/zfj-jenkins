@@ -45,11 +45,11 @@
 			                                field="zephyrCloudAddress">
 			            <f:textbox value="${zephyrCloudInstancesList.zephyrCloudAddress}" default="" />
 			        </f:entry>
-		            <f:entry title="User Name Or Email" description="JIRA Cloud User Name Or Email"
+		            <f:entry title="Email" description="JIRA Cloud User Email"
 			                                field="jiraCloudUserName">
 			            <f:textbox value="${zephyrCloudInstancesList.jiraCloudUserName}" default="" />
 			        </f:entry>
-		            <f:entry title="Password Or ApiToken" description="JIRA Cloud Password Or ApiToken"
+		            <f:entry title="ApiToken" description="JIRA Cloud ApiToken"
 			                                field="jiraCloudPassword">
 			            <f:password value="${zephyrCloudInstancesList.jiraCloudPassword}" default="" />
 			        </f:entry>
